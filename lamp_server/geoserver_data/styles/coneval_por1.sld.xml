@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sld:UserStyle xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+  <sld:Name>Default Styler</sld:Name>
+  <sld:FeatureTypeStyle>
+    <sld:Name>name</sld:Name>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:PropertyIsLessThan>
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>0.6</ogc:Literal>
+          </ogc:PropertyIsLessThan>
+          <ogc:Not>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>value</ogc:PropertyName>
+              <ogc:Literal>0.4</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Not>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#527de3</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#777</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:PropertyIsLessThan>
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>0.4</ogc:Literal>
+          </ogc:PropertyIsLessThan>
+          <ogc:Not>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>value</ogc:PropertyName>
+              <ogc:Literal>0.2</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Not>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#8ca9ed</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#777</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:PropertyIsLessThan>
+          <ogc:PropertyName>value</ogc:PropertyName>
+          <ogc:Literal>0.2</ogc:Literal>
+        </ogc:PropertyIsLessThan>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#c7d5f6</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#777</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:PropertyIsLessThanOrEqualTo>
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>1</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+          <ogc:Not>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>value</ogc:PropertyName>
+              <ogc:Literal>0.8</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Not>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#183d95</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#777</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:Not>
+          <ogc:PropertyIsLessThanOrEqualTo>
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>1</ogc:Literal>
+          </ogc:PropertyIsLessThanOrEqualTo>
+        </ogc:Not>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#eeeeee</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#cccccc</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+    <sld:Rule>
+      <ogc:Filter>
+        <ogc:And>
+          <ogc:PropertyIsLessThan>
+            <ogc:PropertyName>value</ogc:PropertyName>
+            <ogc:Literal>0.8</ogc:Literal>
+          </ogc:PropertyIsLessThan>
+          <ogc:Not>
+            <ogc:PropertyIsLessThan>
+              <ogc:PropertyName>value</ogc:PropertyName>
+              <ogc:Literal>0.6</ogc:Literal>
+            </ogc:PropertyIsLessThan>
+          </ogc:Not>
+        </ogc:And>
+      </ogc:Filter>
+      <sld:PolygonSymbolizer>
+        <sld:Fill>
+          <sld:CssParameter name="fill">#1f4fc1</sld:CssParameter>
+        </sld:Fill>
+      </sld:PolygonSymbolizer>
+      <sld:LineSymbolizer>
+        <sld:Stroke>
+          <sld:CssParameter name="stroke">#777</sld:CssParameter>
+          <sld:CssParameter name="stroke-width">0.1</sld:CssParameter>
+        </sld:Stroke>
+      </sld:LineSymbolizer>
+    </sld:Rule>
+  </sld:FeatureTypeStyle>
+</sld:UserStyle>

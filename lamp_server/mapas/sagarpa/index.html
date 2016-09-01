@@ -1,0 +1,884 @@
+<!DOCTYPE html lang="en-UK">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Atlas de Información Agrícola</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="js/chosen.jquery.min.js" charset="utf-8"></script>
+		<script src="js/geostats.min.js"></script>
+		<script src="js/municipios.json"></script>
+		<link rel="stylesheet" href="js/chosen.min.css" />
+		<link rel="stylesheet" href="js/geostats.css" />
+		<link href="//code.jquery.com/ui/1.11.1/themes/redmond/jquery-ui.css" rel='stylesheet' type='text/css'>
+		<link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<style type="text/css" media="screen">
+		
+body {
+    margin: 0;
+    padding: 0;
+    font: 14px/20px 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-family: 'Open Sans';    
+    overflow: hidden;
+}
+
+#header {
+    font-size: 40px;
+    width: 100%;
+    background-color: #3b6858;
+    color: #fff;
+    text-align: left;
+    line-height: 52px;
+    padding-left: 20px;
+    font-weight: 300;
+}
+
+#header a {
+    text-decoration: none;
+}
+
+#map {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+ 
+#legend {
+	font-family: 'Open Sans', serif;
+	width: 220px;
+	padding: 5px 5px;
+	color: #000;
+	text-align: center;
+	 display: inline-block;
+}
+.legend-box {
+	float: left;
+	margin-left: 5px;
+	line-height: 11px;
+	height: 20px;
+	width: 35px;
+	font-size: 8px;
+	color: #999;
+	border: 1px solid #fff;
+}
+
+#datos_mun {
+    background-color: #fff;
+	font-family: 'Open Sans', serif;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 225px;
+}
+
+.mundata-box {
+    border-bottom: 1px solid #eee;
+    position: relative;
+    height: 80px;
+}
+
+#datos_mun .nom_mun {
+    background-color: #009966;
+    font-size: 14px;
+    padding: 5px 10px;
+    font-weight: 400;
+    color: #fff;
+}
+
+#datos_mun .box-title {
+    padding: 5px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.span-cosecha, .span-sembrada, .span-produccion, .span-valor  {
+    color: #009966;
+    padding: 2px 10px;
+    font-weight: 400;
+    font-size: 18px;
+}
+#filters {
+    z-index: 100;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+.filter-button {
+	padding: 2px 5px;
+	background-color: #009966;
+	margin: 3px;
+    font-size: 14px;
+    line-height: 24px;
+    color: #fff;
+    float: left;
+}
+.filter-button:hover, .filter-selected {
+	color: #222;
+	background-color: #eefff9;
+}
+.state_box {
+	background-color: #66c2a4;
+	height:69px !important;
+	color: #fff;
+}
+.state_name {
+	position: absolute;
+	left: 90px;
+	top: 15px;
+	font-size: 11px;
+	text-transform: uppercase;
+	font-weight: 700;
+	width: 200px;
+}
+.state_image {
+	padding-top: 3px;
+	margin-left: 15px;
+}
+.num_mun {
+	position: absolute;
+	left: 90px;
+	top: 30px;
+	font-size: 11px;
+}
+.span-poder {
+    position: absolute;
+}
+.state_image {
+	padding-top: 3px;
+	margin-left: 15px;
+}
+
+#types {
+	width: 260px;
+    background-color: #fff;
+    z-index: 1999;
+    position: absolute;
+    left: 10px;
+    top: 80px;
+	font-family: 'Open Sans', serif;
+}
+
+.varname {
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #3b6858;
+}
+.varlist-header {
+	background-color: #eefff9;
+	padding: 5px 10px;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #222;
+}
+.titulo {
+    background-color: #009966;
+	padding: 5px 10px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 400;
+    color: #fff;
+}
+.nombre-variable-selected {
+	color: #3b6858;
+}
+
+.agency {
+    padding: 1px 10px;
+}
+
+.chosen-container {
+	margin-bottom: 5px;
+}
+
+#types .chosen-single {
+	border: none;
+	background: #009966;
+	color: #fff;
+	box-shadow: none;
+	text-shadow: none;
+	border-radius: 0px !important;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 300;
+}
+#types .chosen-container .chosen-results li.highlighted {
+	background: #009966;
+}
+
+#loading {
+	  font-family: 'Open Sans', serif;
+  	  font-size: 18px;
+      font-weight: 400;
+      padding: 25px;
+	  position: absolute;
+	  left: 0;
+	  top: 45%;
+	  right: 0;
+	  margin: 0 auto;
+	  z-index: 1000;
+	  background-color: #222;
+	  color: #fff;
+	  text-align: center;
+	  width: 200px;
+	  border-radius: 20px;
+	  display: none;
+  }
+
+		</style>
+		<script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+		<script src="js/jquery.ui.labeledslider.js"></script>
+	</head>
+	<body>
+		<div id="loading">Cargando datos...</div>
+
+
+		<div id="map"></div>
+		<div id="datos"></div>
+		
+		<div id="types">
+			<div class="titulo">Atlas de Información Agrícola</span></div>			
+			<div class="varlist-header">Filtros</div>
+			<div class="varname types">Producto
+				<select id="producto" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='19700'>Maíz grano</option>					
+					<option value='23900'>Palma africana o de aceite</option>
+					<option value='23000'>Nopalitos</option>
+					<option value='24700'>Papaya</option>
+					<option value='8300'>Ciruela</option>
+					<option value='29700'>Soya</option>
+					<option value='7300'>Cebada grano</option>
+					<option value='21200'>Melón</option>
+					<option value='500'>Agave</option>
+					<option value='22400'>Naranja</option>
+					<option value='20600'>Manzana</option>
+					<option value='3900'>Avena forrajera verde</option>
+					<option value='28700'>Sandía</option>				
+					<option value='11400'>Chile verde</option>
+					<option value='6900'>Cártamo</option>
+					<option value='12400'>Durazno</option>
+					<option value='29500'>Sorgo grano</option>
+					<option value='24800'>Pastos y praderas verde</option>
+					<option value='600'>Aguacate</option>
+					<option value='20300'>Mandarina</option>
+					<option value='7900'>Cereza</option>
+					<option value='19800'>Maíz forrajero verde</option>
+					<option value='8350'>Cítricos</option>
+					<option value='29300'>Sorgo forrajero verde</option>
+					<option value='14200'>Frijol</option>
+					<option value='19300'>Litchi</option>
+					<option value='24400'>Papa</option>
+					<option value='6500'>Caña de azúcar</option>
+					<option value='26300'>Pitahaya</option>
+					<option value='20400'>Mango</option>
+					<option value='17300'>Jaca (jackfruit)</option>
+					<option value='31000'>Tomate verde</option>
+					<option value='16000'>Guayaba</option>
+					<option value='30800'>Tomate rojo (jitomate)</option>
+					<option value='17100'>Hule hevea</option>
+					<option value='32800'>Zacate</option>
+					<option value='14450'>Frutales varios</option>
+					<option value='23300'>Nuez de castilla</option>
+					<option value='33100'>Zapote</option>
+					<option value='31900'>Tuna</option>
+					<option value='28400'>Sábila</option>
+					<option value='14700'>Garbanzo grano</option>
+					<option value='35900'>Jatropha</option>
+					<option value='18700'>Lenteja</option>
+					<option value='32500'>Yuca alimenticia</option>
+					<option value='16600'>Henequén</option>
+					<option value='19600'>Maguey pulquero (miles de lts.)</option>
+					<option value='5800'>Calabacita</option>
+					<option value='26200'>Pistache</option>
+					<option value='30600'>Tejocote</option>
+					<option value='8900'>Col (repollo)</option>
+					<option value='19000'>Limón</option>
+					<option value='23200'>Nuez</option>
+					<option value='31500'>Trigo grano</option>
+					<option value='25100'>Pera</option>
+					<option value='4000'>Avena grano</option>
+					<option value='16300'>Haba grano</option>
+					<option value='6100'>Calabaza (semilla) o chihua</option>
+					<option value='8800'>Coco fruta</option>
+					<option value='32000'>Uva</option>
+					<option value='13200'>Espinaca</option>
+					<option value='24130'>Palma de ornato</option>
+					<option value='5100'>Brócoli</option>
+					<option value='11200'>Chile habanero</option>
+					<option value='31200'>Toronja (pomelo)</option>
+					<option value='3800'>Avena forrajera achicalada</option>
+					<option value='22900'>Nopal</option>
+					<option value='14600'>Garbanzo forrajero</option>
+					<option value='16800'>Higo</option>
+					<option value='27500'>Rábano</option>
+					<option value='26500'>Plantas de ornato (planta)</option>
+					<option value='33800'>Canola</option>
+					<option value='34500'>Árbol de navidad (planta)</option>
+					<option value='33300'>Zarzamora</option>
+					<option value='10400'>Chabacano</option>
+					<option value='13900'>Frambuesa</option>
+					<option value='10900'>Chícharo</option>
+					<option value='11700'>Chirimoya</option>
+					<option value='6000'>Calabaza</option>
+					<option value='5300'>Cacahuate</option>
+					<option value='7400'>Cebolla</option>
+					<option value='24820'>Pastos y praderas achicalado</option>
+					<option value='26700'>Plátano</option>
+					<option value='23350'>Nuez criolla</option>
+					<option value='20200'>Mamey</option>
+					<option value='3300'>Arroz palay</option>
+					<option value='30100'>Tamarindo</option>
+					<option value='1600'>Alfalfa achicalada</option>
+					<option value='34300'>Maracuyá</option>
+					<option value='1500'>Alfalfa verde</option>
+					<option value='300'>Achiote</option>
+					<option value='6510'>Caña de azúcar semilla</option>
+					<option value='7200'>Cebada forrajera verde</option>
+					<option value='8000'>Cilantro</option>
+					<option value='5400'>Cacao</option>
+					<option value='24900'>Pepino</option>
+					<option value='9700'>Copra</option>
+					<option value='11430'>Chile verde morrón</option>
+					<option value='26350'>Pitaya</option>
+					<option value='29400'>Sorgo escobero</option>
+					<option value='25800'>Piña</option>
+					<option value='3910'>Avena Forrajera seca</option>
+					<option value='24200'>Palma taco</option>
+					<option value='22200'>Nanche</option>
+					<option value='100'>Aceituna</option>
+					<option value='30000'>Tabaco</option>
+					<option value='13400'>Eucalipto</option>
+					<option value='1300'>Alcachofa</option>
+					<option value='800'>Ajonjolí</option>
+					<option value='5900'>Calabacita semilla</option>
+					<option value='28900'>Saramuyo</option>
+					<option value='16930'>Hortalizas</option>
+					<option value='5500'>Café cereza</option>
+					<option value='1100'>Albahaca</option>
+					<option value='16400'>Haba verde</option>
+					<option value='4900'>Blueberry</option>
+					<option value='18900'>Lima</option>
+					<option value='32900'>Zanahoria</option>
+					<option value='18500'>Lechuga</option>
+					<option value='9000'>Coliflor</option>
+					<option value='29000'>Shop suey</option>
+					<option value='35600'>Frijol x pelón</option>
+					<option value='37000'>Zapote Chiclero</option>
+					<option value='31700'>Triticale forrajero verde</option>
+					<option value='4600'>Berenjena</option>
+					<option value='4800'>Betabel</option>
+					<option value='7100'>Cebada forrajera achicalada</option>
+					<option value='700'>Ajo</option>
+					<option value='1800'>Algodón hueso</option>
+					<option value='3500'>Arvejón</option>
+					<option value='15000'>Girasol</option>
+					<option value='24100'>Palma de ornato (planta)</option>
+					<option value='15600'>Granada</option>
+					<option value='2300'>Almendra</option>
+					<option value='11300'>Chile seco</option>
+					<option value='27650'>Rambután</option>
+					<option value='19500'>Macadamia</option>
+					<option value='15900'>Guanábana</option>
+					<option value='17800'>Jojoba</option>
+					<option value='20500'>Mano de león</option>
+					<option value='5650'>Carambolo</option>
+					<option value='12600'>Ejote</option>
+					<option value='25700'>Pimienta</option>
+					<option value='29310'>Sorgo forrajero seco</option>
+					<option value='13760'>Flores</option>
+					<option value='12500'>Ebo (janamargo o veza)</option>
+					<option value='10600'>Chay</option>
+					<option value='21400'>Membrillo</option>
+					<option value='13100'>Espárrago</option>
+					<option value='29200'>Sorgo forrajero achicalado</option>
+					<option value='28320'>Rye grass achicalado</option>
+					<option value='20800'>Marañón</option>
+					<option value='31400'>Trigo forrajero verde</option>
+					<option value='17600'>Jícama</option>
+					<option value='24810'>Pastos y praderas seco</option>
+					<option value='32400'>Viveros (planta)</option>
+					<option value='33430'>Zempoalxóchitl</option>
+					<option value='5700'>Caimito</option>
+					<option value='19100'>Limón real</option>
+					<option value='15700'>Guaje</option>
+					<option value='25900'>Piñón</option>
+					<option value='12900'>Epazote</option>
+					<option value='6300'>Camote</option>
+					<option value='2200'>Almácigo (planta)</option>
+					<option value='32100'>Vainilla</option>
+					<option value='24140'>Palma de ornato camedor (gruesas)</option>
+					<option value='12700'>Elote</option>
+					<option value='200'>Acelga</option>
+					<option value='7800'>Centeno grano</option>
+					<option value='2810'>Anturios (gruesa)</option>
+					<option value='1700'>Algarrobo</option>
+					<option value='25500'>Persimonio</option>
+					<option value='12200'>Dátil</option>
+					<option value='2800'>Amaranto</option>
+					<option value='10800'>Chía</option>
+					<option value='12800'>Eneldo</option>
+					<option value='25300'>Perón</option>
+					<option value='22850'>Noni</option>
+					<option value='19900'>Maíz palomero</option>
+					<option value='7210'>Cebada forrajera seca</option>
+					<option value='17400'>Jamaica</option>
+					<option value='30730'>Terciopelo</option>
+					<option value='27400'>Rabanito</option>
+					<option value='3700'>Ave del paraíso</option>
+					<option value='15800'>Guamúchil</option>
+					<option value='18800'>Leucaena</option>
+					<option value='4050'>Avena grano semilla</option>
+					<option value='31800'>Triticale grano</option>
+					<option value='34000'>Malanga</option>
+					<option value='14710'>Garbanzo porquero</option>
+					<option value='10130'>Crisantemo (gruesa)</option>
+					<option value='28300'>Rye grass verde</option>
+					<option value='31100'>Tomillo</option>
+					<option value='27200'>Quelite</option>
+					<option value='19820'>Maíz forrajero achicalado</option>
+					<option value='16900'>Higuerilla</option>
+					<option value='32810'>Zacate semilla</option>
+					<option value='28200'>Rosa (gruesa)</option>
+					<option value='10700'>Chayote</option>
+					<option value='2400'>Alpiste</option>
+					<option value='17700'>Jícama semilla</option>
+					<option value='22000'>Nabo</option>
+					<option value='19810'>Maíz forrajero seco</option>
+					<option value='25200'>Perejil</option>
+					<option value='6600'>Capulín</option>
+					<option value='15100'>Girasol flor (gruesa)</option>
+					<option value='23700'>Orégano</option>
+					<option value='8950'>Col de bruselas</option>
+					<option value='31410'>Trigo forrajero seco</option>
+					<option value='36200'>Stevia</option>
+					<option value='14000'>Fresa</option>
+					<option value='32250'>Varios</option>
+					<option value='23400'>Okra (angu o gombo)</option>
+					<option value='22700'>Níspero</option>
+					<option value='17000'>Huauzontle</option>
+					<option value='9300'>Colza</option>
+					<option value='12550'>Ebo (janamargo o veza) grano</option>
+					<option value='28800'>Sandía semilla</option>
+					<option value='25000'>Pepino semilla</option>
+					<option value='4610'>Berenjena semilla</option>
+					<option value='21300'>Melón semilla</option>
+					<option value='13800'>Flores semilla</option>
+					<option value='5200'>Brócoli semilla</option>
+					<option value='15200'>Girasol forrajero</option>
+					<option value='11000'>Chícharo semilla</option>
+					<option value='11500'>Chile verde semilla</option>
+					<option value='30900'>Tomate rojo (jitomate semilla)</option>
+					<option value='8100'>Cilantro semilla</option>
+					<option value='17500'>Jenjíbre</option>
+					<option value='3110'>Apio semilla</option>
+					<option value='22650'>Neem</option>
+					<option value='13300'>Estropajo</option>
+					<option value='9100'>Coliflor semilla</option>
+					<option value='2700'>Alubia</option>
+					<option value='7500'>Cebolla semilla</option>
+					<option value='18200'>Kenaf</option>
+					<option value='2900'>Anís</option>
+					<option value='11800'>Chives</option>
+					<option value='31420'>Trigo forrajero achicalado</option>
+					<option value='16500'>Helecho</option>
+					<option value='3000'>Anona</option>
+					<option value='8600'>Clyptoria</option>
+					<option value='33000'>Zanahoria semilla</option>
+					<option value='29800'>Soya semilla</option>
+					<option value='18510'>Lechuga Semilla</option>
+					<option value='28310'>Rye grass seco</option>
+					<option value='21100'>Mejorana</option>
+					<option value='9600'>Comino</option>
+					<option value='33900'>Ecualaista</option>
+					<option value='430'>Agapando</option>
+					<option value='14300'>Frijol semilla</option>
+					<option value='20700'>Manzanilla</option>
+					<option value='13150'>Especias y medicinales</option>
+					<option value='21800'>Mostaza</option>
+					<option value='3100'>Apio</option>
+					<option value='2500'>Alpiste grano</option>
+					<option value='22100'>Nabo forrajero</option>
+					<option value='2600'>Alpiste verde</option>
+					<option value='18000'>Kay laan</option>
+					<option value='34100'>Cebada grano (semilla)</option>
+					<option value='3200'>Arrayán</option>
+					<option value='4130'>Azucena</option>
+					<option value='4200'>Baby back choi</option>
+					<option value='21600'>Mijo</option>
+					<option value='13500'>Flor cera</option>
+					<option value='20930'>Margarita</option>
+					<option value='18600'>Leek</option>
+					<option value='28100'>Romero</option>
+					<option value='28260'>Rosa</option>
+					<option value='20000'>Maíz grano semilla</option>
+					<option value='7720'>Centeno forrajero achicalado</option>
+					<option value='19200'>Linaza</option>
+					<option value='15750'>Guaje (verdura)</option>
+					<option value='30400'>Tarragón</option>
+					<option value='9400'>Colza semilla</option>
+					<option value='15430'>Gladiola</option>
+					<option value='12560'>Ebo (janamargo o veza) seco</option>
+					<option value='28000'>Romerito</option>
+					<option value='21500'>Menta</option>
+					<option value='10100'>Crisantemo</option>
+					<option value='28600'>Salvia</option>
+					<option value='26100'>Pipicha</option>
+					<option value='30300'>Tangerina</option>
+					<option value='36000'>Hoja de plátano (belillo)</option>
+					<option value='7600'>Cebollín</option>
+					<option value='30500'>Te limón</option>
+					<option value='24600'>Pápalo</option>
+					<option value='21700'>Mijo forrajero</option>
+					<option value='4300'>Bangaña</option>
+					<option value='27700'>Rapini</option>
+					<option value='33200'>Zapupe</option>
+					<option value='7710'>Centeno forrajero seco</option>
+					<option value='3400'>Arroz semilla</option>
+					<option value='2160'>Alhelí</option>
+					<option value='31600'>Trigo grano semilla</option>
+					<option value='16700'>Hierbabuena</option>
+					<option value='4700'>Berro</option>
+					<option value='29600'>Sorgo semilla</option>
+					<option value='1400'>Alcatraz</option>
+					<option value='32300'>Verdolaga</option>
+					<option value='25400'>Flor perrito</option>
+					<option value='1200'>Albricia</option>
+					<option value='22530'>Nardo</option>
+					<option value='31720'>Triticale forrajero achicalado</option>
+					<option value='23160'>Nube</option>
+					<option value='22300'>Napa</option>
+					<option value='18400'>Kohlrabi</option>
+					<option value='34200'>Flor de calabaza</option>
+					<option value='29930'>Statice</option>
+					<option value='27000'>Poro</option>
+					<option value='31710'>Triticale forrajero seco</option>
+					<option value='400'>Agapando (gruesa)</option>
+					<option value='12100'>Damazco</option>
+					<option value='11100'>Chilacayote</option>
+					<option value='26830'>Polar</option>
+					<option value='35400'>Shangai-bock-choy</option>
+					<option value='5000'>Boi choi</option>
+					<option value='21900'>Muzu</option>
+					<option value='32700'>Yu-choy</option>
+					<option value='17900'>Kale</option>
+					<option value='13600'>Flor kale</option>
+					<option value='31300'>Trébol</option>
+					<option value='27900'>Remolacha forrajera</option>
+					<option value='7700'>Centeno forrajero verde</option>
+					<option value='9800'>Coquia</option>
+					<option value='23600'>Olleto</option>
+					<option value='30200'>Tangelo</option>
+					<option value='4100'>Azucena (gruesa)</option>
+					<option value='22105'>Nabo (verdura)</option>
+					<option value='10200'>Flor cundeamor</option>
+					<option value='33810'>Canola forraje</option>
+					<option value='14500'>Gailán</option>
+					<option value='35800'>Espinaca china</option>
+					<option value='9200'>Colinabo</option>
+					<option value='27800'>Remolacha azucarera</option>
+					<option value='13850'>Forrajes</option>
+					<option value='24500'>Papa (semilla)</option>
+					<option value='9500'>Collard</option>
+					<option value='23800'>Pak choi</option>
+					<option value='24750'>Pasto (tapete)</option>
+					<option value='16935'>Hongos y setas</option>
+					<option value='36100'>Maralfalfa</option>
+					<option value='3730'>Ave del paraíso (gruesa)</option>
+					<option value='21810'>Mostaza forrajera</option>
+					<option value='1401'>Alcatraz (gruesa)</option>
+					<option value='13700'>Flores (gruesa)</option>
+					<option value='20900'>Margarita (manojo)</option>
+					<option value='30700'>Terciopelo (manojo)</option>
+					<option value='15400'>Gladiola (gruesa)</option>
+					<option value='18850'>Lilium (gruesa)</option>
+					<option value='19210'>Linaza ornamental (manojo)</option>
+					<option value='22500'>Nardo (gruesa)</option>
+					<option value='31510'>Trigo ornamental (manojo)</option>
+					<option value='2410'>Alpiste ornamental (manojo)</option>
+					<option value='33400'>Zempoalxóchitl (manojo)</option>
+					<option value='2100'>Alhelí (gruesa)</option>
+					<option value='2750'>Alstroemeria (gruesa)</option>
+					<option value='26900'>Pon-pon (gruesa)</option>
+					<option value='28280'>Rosa de invernadero (gruesa)</option>
+					<option value='13710'>Flores (manojo)</option>
+					<option value='23130'>Nube (manojo)</option>
+					<option value='24760'>Pasto (tapete) m2</option>
+					<option value='16210'>Gypsophilia (manojo)</option>
+					<option value='17200'>Inmortal (manojo)</option>
+					<option value='16200'>Gypsophilia (gruesa)</option>
+					<option value='2130'>Alhelí (manojo)</option>
+					<option value='12330'>Dólar (manojo)</option>
+					<option value='26800'>Polar (gruesa)</option>
+					<option value='14900'>Gerbera (gruesa)</option>
+					<option value='23750'>Orquídea (gruesa)</option>
+					<option value='16502'>Helecho (manojo)</option>
+					<option value='16501'>Helecho (planta)</option>
+					<option value='3650'>Aster (manojo)</option>
+					<option value='29150'>Solidago (manojo)</option>
+					<option value='8400'>Clavel (gruesa)</option>
+					<option value='35200'>Limonium (manojo)</option>
+					<option value='29900'>Statice (manojo)</option>
+					<option value='22800'>Noche buena (planta)</option>
+					<option value='13730'>Flores (planta)</option>
+					<option value='34800'>Crisantemo (planta)</option>
+					<option value='8460'>Clavel (planta)</option>
+					<option value='28230'>Rosa (planta)</option>
+					<option value='14800'>Geranio (planta)</option>
+					<option value='31810'>Tulipán holandés (planta)</option>
+					<option value='25600'>Petunia (planta)</option>
+					<option value='10300'>Cyclamen (planta)</option>
+					<option value='8200'>Cineraria (planta)</option>
+					<option value='35000'>Pensamiento (planta)</option>
+					<option value='6200'>Calancoe (planta)</option>
+					<option value='14100'>Fresa (planta)</option>
+					<option value='18851'>Lilium (planta)</option>
+					<option value='34600'>Aretillo (planta)</option>
+					<option value='35100'>Zempoalxochitl (planta)</option>
+					<option value='28270'>Rosa de invernadero (planta)</option>
+					<option value='34700'>Belén (planta)</option>
+					<option value='4500'>Begonia (planta)</option>
+					<option value='34900'>Hortensia (planta)</option>
+					<option value='26600'>Plantero de tabaco (planta)</option>
+					<option value='36900'>Bambu</option>
+					<option value='19610'>Maguey Mixiotero</option>
+					<option value='36800'>Palo de arco</option>
+					<option value='22600'>Nectarina</option>
+				</select>
+			</div>
+			<div class="varname types">Año
+				<select id="year" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value="2012">2012</option>
+					<option value="2011">2011</option>
+					<option value="2010">2010</option>
+					<option value="2009">2009</option>
+					<option value="2008">2008</option>
+					<option value="2007">2007</option>
+					<option value="2006">2006</option>
+					<option value="2005">2005</option>
+					<option value="2004">2004</option>
+					<option value="2003">2003</option>
+					<option value="2002">2002</option>
+					<option value="2008">2001</option>
+					<option value="2007">2000</option>
+				</select>
+			</div>
+		</div>
+		<div id="filters">
+			<div>Variable representada en el mapa:</div>
+			<div>
+				<div class="var-filter-button filter-button filter-selected" id="varselect-sembrada" onmousedown="change_var_map('sembrada')" id="filter-sembrada">Superficie Sembrada</div>
+				<div class="var-filter-button filter-button" id="varselect-cosecha" onmousedown="change_var_map('cosecha')" id="filter-cosecha">Superficie Cosechada</div>
+				<div class="var-filter-button filter-button" id="varselect-produccion" onmousedown="change_var_map('produccion')" id="filter-produccion">Producción</div>
+				<div class="var-filter-button filter-button" id="varselect-valor" onmousedown="change_var_map('valor')" id="filter-valor">Valor de la Producción</div>
+				<div style="clear: both;"></div>
+			</div>
+		</div>
+		<div id="datos_mun">
+			<div class="nom_mun">Pase el cursor sobre un municipio...</div>
+			<div class="mundata-box state_box">
+				<div class="state_image"></div>
+				<div class="state_name"></div>
+				<div class="num_mun"></div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title"> Sembrada (Nacional):</div>
+				<div id="var-sembrada" class="span-sembrada">--</div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title">Cosecha (Nacional):</div>
+				<div id="var-cosecha" class="span-cosecha">--</div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title">Producción (Nacional):</div>
+				<div id="var-produccion" class="span-produccion">--</div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title">Valor (Nacional):</div>
+				<div id="var-valor" class="span-valor">--</div>
+			</div>
+			<div id="legend" style="display: block;">
+				<div style="background-color: #fff; border: 1px solid #f2f2f2;" class="legend-box"></div>
+				<div style="background-color: #c2e699; border: 1px solid #b2e2e2;" class="legend-box"></div>
+				<div style="background-color: #78c679; border: 1px solid #66c2a4;" class="legend-box"></div>
+				<div style="background-color: #31a354; border: 1px solid #2ca25f;" class="legend-box"></div>
+				<div style="background-color: #006837; border: 1px solid #006d2c;" class="legend-box"></div>
+				<div id="legend-1" class="legend-box">--</div>
+				<div id="legend-2" class="legend-box">--</div>
+				<div id="legend-3" class="legend-box">--</div>
+				<div id="legend-4" class="legend-box">--</div>
+				<div id="legend-5" class="legend-box">--</div>
+				<div style="clear:both;"></div>
+			</div>
+		</div>
+		
+		<script type="text/javascript" charset="utf-8">
+		
+			$(".chosen-select").chosen({width: "240px"});
+		
+			function commaSeparateNumber(val){
+			    while (/(\d+)(\d{3})/.test(val.toString())){
+			      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+			    }
+			    return val;
+			  }
+			   
+			var c_data = null;
+			var map_data;
+			var c_var = 'sembrada';
+			var breaks;
+			
+			var nacional = {};
+			
+			var fillColors = ["#c2e699", "#78c679", "#31a354", "#006837"];
+			
+			var entidades_list = ["", "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Coahuila", "Colima", "Chiapas", "Chihuahua", "Distrito Federal", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco", "México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"];
+			var entidades_count_mun = [0,11,5,5,11,38,10,118,67,16,39,46,81,84,125,125,113,33,20,51,570,217,18,9,58,18,72,17,43,60,212,106,58];
+
+			function fill(n) {
+				if (n >= breaks[3]) return "#006837";
+				else if (n >= breaks[2]) return "#31a354";
+				else if (n >= breaks[1]) return "#78c679";
+				else if (n == -1) return "#fff";
+				else return "#c2e699";
+			}
+			function stroke(n) {
+				if (n >= breaks[3]) return "#006d2c";
+				else if (n >= breaks[2]) return "#2ca25f";
+				else if (n >= breaks[1]) return "#66c2a4";
+				else if (n == -1) return "#fff";
+				else return "#b2e2e2";
+				
+			}
+			
+			function change_var_map(v) {
+				$(".var-filter-button").removeClass("filter-selected");
+				$("#varselect-"+v).addClass("filter-selected");
+				c_var = v;
+				change_var();
+			}
+			
+			function change_var() {
+				$("#loading").show();
+				
+				$.getJSON( "php/attributes.php", { producto: $("#producto option:selected").val(), year: $("#year option:selected").val() } )
+					.done(function( json ) {
+						var values = [];
+						$.each( municipios.features, function( mid, municipio ) {
+							if (typeof json[municipio.properties.CVE_INEGI] != 'undefined') {
+								municipio.properties.sembrada = parseInt(json[municipio.properties.CVE_INEGI].sembrada);
+								municipio.properties.cosecha = parseInt(json[municipio.properties.CVE_INEGI].cosecha);
+								municipio.properties.produccion = parseInt(json[municipio.properties.CVE_INEGI].produccion);
+								municipio.properties.valor = parseInt(json[municipio.properties.CVE_INEGI].valor);
+								if (!isNaN(parseInt(json[municipio.properties.CVE_INEGI][c_var]))) 
+									values.push(parseInt(json[municipio.properties.CVE_INEGI][c_var]));	
+							}
+							else {
+								municipio.properties.sembrada = -1;
+								municipio.properties.cosecha = -1;
+								municipio.properties.produccion = -1;
+								municipio.properties.valor = -1;
+							}
+						});
+						nacional["sembrada"] = json["99999"]["sembrada"];
+						nacional["cosecha"] = json["99999"]["cosecha"];
+						nacional["produccion"] = json["99999"]["produccion"];
+						nacional["valor"] = json["99999"]["valor"];
+						var gs = new geostats(values);
+						breaks = gs.getClassJenks(4);
+						gs.setColors(fillColors);
+						gs.setPrecision(0);
+						$("#legend-1").html("0");
+						$("#legend-2").html("&lt; " + commaSeparateNumber(breaks[1]));
+						$("#legend-3").html(commaSeparateNumber(breaks[1]) + " - " + commaSeparateNumber(breaks[2]));
+						$("#legend-4").html(commaSeparateNumber(breaks[2]) + " - " + commaSeparateNumber(breaks[3]));
+						$("#legend-5").html(commaSeparateNumber(breaks[3]) + " - " + commaSeparateNumber(breaks[4]));
+						
+						if (map_data != null) map.removeLayer(map_data);
+						map_data = L.geoJson(municipios, {
+							style: function(feature) {
+								return {
+							        weight: 0.25,
+							        opacity: 0.5,
+							        color: stroke(feature.properties[c_var]),
+							        fillOpacity: 0.5,
+							        fillColor: fill(feature.properties[c_var])
+						        }
+							},
+							onEachFeature: onEachFeature
+						})
+						
+						map.addLayer(map_data);					
+						$("#loading").hide();
+				});
+				
+				
+		    }
+			
+			var map = new L.Map('map', {
+				maxZoom: 14,
+				minZoom: 5
+			}).setView(new L.LatLng(21.25,-101.5),5);
+			map.scrollWheelZoom.disable();
+			
+			var baseLayer = new L.TileLayer("http://{s}.google.com/vt/?hl=en&x={x}&y={y}&z={z}&s={s}&apistyle=p.s%3A-100%2Cs.t%3A1314%7Cp.v%3Aoff%2Cs.t%3A6%7Cp.l%3A31%2Cs.t%3A3%7Cp.v%3Aoff%2Cs.t%3A18%7Cp.v%3Aoff%2Cs.t%3A2%7Cp.v%3Aoff%2Cs.t%3A5%7Cp.l%3A47%2Cs.t%3A20%7Cp.v%3Aoff%2Cs.t%3A4%7Cp.v%3Aoff%2Cs.t%3A5%7Cs.e%3Al%7Cp.v%3Aoff&style=47,37%7Csmartmaps", {
+				subdomains: ['mt0','mt1','mt2','mt3'],
+				detectRetina: 'true',
+				attribution: "Basemap © 2014 Google",
+				zIndex: -1
+			});
+			map.addLayer(baseLayer);
+			
+			var entidades = new L.TileLayer.WMS("/geoserver/geom/wms", {
+				layers: 'geom:entidades',
+				transparent: 'true',
+				format: 'image/png',
+				opacity: '0.5',
+				tiled: 'true',
+				detectRetina: 'true',
+				zIndex: 200
+			});
+	        map.addLayer(entidades);
+	        
+	        function onEachFeature(feature, layer) {
+				layer.on({
+					mouseover: function () {
+						c_data = feature.properties;
+						$(".nom_mun").html(c_data.NOM_MUN + ", " + c_data.NOM_ENT);
+						$(".state_name").html(entidades_list[parseInt(c_data.CVE_ENT)]);
+						$(".num_mun").html(entidades_count_mun[parseInt(c_data.CVE_ENT)] + " municipios");
+						$(".state_image").html("<img src='img/estados/"+parseInt(c_data.CVE_ENT)+".png' />");
+						if (c_data["sembrada"] != -1) $(".span-sembrada").html(commaSeparateNumber(c_data["sembrada"] ) + " Ha" + "<br/>(" + commaSeparateNumber(nacional.sembrada) + " Ha" + ")");
+						else $(".span-sembrada").html("0 Ha"+ "<br/>(" + commaSeparateNumber(nacional.sembrada) + " Ha" + ")");
+						if (c_data["cosecha"] != -1) $(".span-cosecha").html(commaSeparateNumber(c_data["cosecha"]) + " Ha <br/>(" + commaSeparateNumber(nacional.cosecha) + " Ha)");
+						else $(".span-cosecha").html("0 Ha"+ "<br/>(" + commaSeparateNumber(nacional.cosecha) + "Ha)");
+						if (c_data["produccion"] != -1) $(".span-produccion").html(commaSeparateNumber(c_data["produccion"]) + " Ton <br/>(" + commaSeparateNumber(nacional.produccion) + " Ton)");
+						else $(".span-produccion").html("0 Ton"+ "<br/>(" + commaSeparateNumber(nacional.produccion) + " Ton)");
+						if (c_data["valor"] != -1) $(".span-valor").html(commaSeparateNumber("$" + c_data["valor"]) + "<br/>($" + commaSeparateNumber(nacional.valor) + ")");
+						else $(".span-valor").html("$0"+ "<br/>($" + commaSeparateNumber(nacional.valor) + ")");
+						
+					}
+				});
+			}
+			
+			$( "select.chosen-select" ).change(function () { change_var(); });
+			change_var();
+			
+			
+
+		    
+		</script>
+
+	</body>
+
+</html>
