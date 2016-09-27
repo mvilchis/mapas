@@ -1,17 +1,20 @@
-FROM ubuntu:latest
+FROM ubuntu:14.04
 
 #
 RUN apt-get -y update
 #-------------Instalacion de prerequisitos  ------------------------
 RUN apt-get install -y --no-install-recommends\
   unzip\
-  openjdk-8-jdk\
+  #openjdk-8-jdk\
   vim\
+  default-jdk\
   python-software-properties\
   wget\
   pwgen\
   sudo \
-  software-properties-common
+  software-properties-common\
+  libgdal1-dev\
+  libproj-dev
 
 
 RUN mkdir servidor
@@ -19,10 +22,14 @@ ADD db.out.zip servidor/
 WORKDIR servidor
 
 #------------ Instalacion de apache y php   ------------------------
+#------------ Se agrega el repositorio universal ----------------
 RUN apt-get install -y --no-install-recommends\
   apache2 \
-  php\
-  php-mcrypt&&\
+  libapache2-mod-php5\
+  php5\
+  php5-mysql\
+  php5-pgsql\
+  php5-mcrypt&&\
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV APACHE_RUN_USER www-data
@@ -38,10 +45,10 @@ RUN apt-get -y update
 RUN apt-get install -yf \
      postgresql\
      postgresql-contrib\
-     postgresql-9.5-postgis-2.1\
+     #postgresql-9.3.8-postgis-2.1\
      postgis\
-     pgadmin3\
-     postgresql-contrib-9.5
+     pgadmin3
+     #postgresql-contrib-9.5
 
 USER postgres
 
@@ -50,7 +57,7 @@ RUN    /etc/init.d/postgresql start &&\
     createdb -O docker docker
 
 
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
+#RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
 
 USER root
 
@@ -61,8 +68,7 @@ RUN apt-get install -y --no-install-recommends\
    tomcat7\
    tomcat7-docs\
    tomcat7-admin\
-   tomcat7-examples\
-   default-jdk
+   tomcat7-examples
 ADD tomcat_run.sh /tomcat_run.sh
 
 
@@ -85,12 +91,10 @@ ENV MAPAS_DIR /srv/www/mapas/
 COPY mapas $MAPAS_DIR
 
 ## Move /etc/apache2
-ENV APACHE_DIR /resources
+ENV APACHE_DIR /etc/apache2
 COPY apache2 $APACHE_DIR
 
 
-RUN apt-get install -y libapache2-mod-php
-COPY libphp5.so /usr/lib/apache2/modules/
 RUN chmod +x /*.sh
 
 EXPOSE 8080 5432 80
