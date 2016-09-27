@@ -22,7 +22,6 @@ WORKDIR servidor
 RUN apt-get install -y --no-install-recommends\
   apache2 \
   php\
-  libapache2-mod-php\
   php-mcrypt&&\
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -76,17 +75,23 @@ RUN cd /var/lib/tomcat7/webapps/; unzip geoserver-2.7.1-war.zip
 RUN rm /var/lib/tomcat7/webapps/geoserver-2.7.1-war.zip
 
 
-ENV MAPAS /srv/www/mapas/
-COPY mapas $MAPAS
-ENV RESOURCES /tmp/resources/
-COPY resources/* $RESOURCES
-#RUN mv /tmp/resources/apache2/sites-enabled /etc/apache2/sites-enabled
-#RUN mv /tmp/resources/apache2/sites-available /etc/apache2/sites-available
+#### Move all files from old server to docker 
 
-#---- Locales
-#RUN apt-get  install -y language-pack-en-base
+### Move /var/lib/tomcat7/webapps/geoserver/data
+ENV DATA_DIR /var/lib/tomcat7/webapps/geoserver/data
+COPY data $DATA_DIR
+### Move /srv/www/mapas 
+ENV MAPAS_DIR /srv/www/mapas/
+COPY mapas $MAPAS_DIR
 
+## Move /etc/apache2
+ENV APACHE_DIR /resources
+COPY apache2 $APACHE_DIR
+
+
+RUN apt-get install -y libapache2-mod-php
+COPY libphp5.so /usr/lib/apache2/modules/
 RUN chmod +x /*.sh
 
-EXPOSE 8080 5432
+EXPOSE 8080 5432 80
 CMD /tomcat_run.sh & /postgis_run.sh & /usr/sbin/apache2ctl -D FOREGROUND
