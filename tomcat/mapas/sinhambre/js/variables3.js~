@@ -1,0 +1,19 @@
+var variables = { "al": [{
+    "desc": "Incorporar a nuevas familias al padrón de Oportunidades",
+    "variable": "p12"
+}, {
+    "desc": "Incorporar a nuevas familias al padrón de PAL",
+    "variable": "p13"
+}, {
+    "desc": "Incorporar a nuevas familias al padrón de PAL SIN HAMBRE",
+    "variable": "p14"
+}],
+"p1": [{
+    "desc": "Inicial",
+    "variable": "p10"
+},
+{
+    "desc": "Preescolar",
+    "variable": "p10"
+}]
+};

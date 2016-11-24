@@ -1,0 +1,37 @@
+<dataStore>
+  <id>DataStoreInfoImpl-39156e9:14e2b96f524:-7ff6</id>
+  <name>sinhambre</name>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-39156e9:14e2b96f524:-7ff8</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="Connection timeout">20</entry>
+    <entry key="port">5432</entry>
+    <entry key="passwd">crypt1:lU1El65bJTdk53R535nK0wVMRjQR8wpC</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="encode functions">false</entry>
+    <entry key="Evictor run periodicity">300</entry>
+    <entry key="namespace">clark.gd/sinhambre</entry>
+    <entry key="schema">public</entry>
+    <entry key="create database">false</entry>
+    <entry key="fetch size">10000</entry>
+    <entry key="preparedStatements">false</entry>
+    <entry key="min connections">1</entry>
+    <entry key="Evictor tests per run">3</entry>
+    <entry key="host">localhost</entry>
+    <entry key="validate connections">true</entry>
+    <entry key="max connections">10</entry>
+    <entry key="database">sinhambre</entry>
+    <entry key="Support on the fly geometry simplification">true</entry>
+    <entry key="Max connection idle time">300</entry>
+    <entry key="Test while idle">true</entry>
+    <entry key="Loose bbox">true</entry>
+    <entry key="Expose primary keys">false</entry>
+    <entry key="Max open prepared statements">50</entry>
+    <entry key="Estimated extends">true</entry>
+    <entry key="user">postgres</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

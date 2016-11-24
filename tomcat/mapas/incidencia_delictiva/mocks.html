@@ -1,0 +1,623 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Atlas de Incidencia Delictiva</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="js/chosen.jquery.min.js" charset="utf-8"></script>
+		<script src="js/geostats.min.js"></script>
+		<script src="js/municipios.json"></script>
+		<link rel="stylesheet" href="js/chosen.min.css" />
+		<link rel="stylesheet" href="js/geostats.css" />
+		<link href="https://code.jquery.com/ui/1.11.1/themes/redmond/jquery-ui.css" rel='stylesheet' type='text/css'>
+		<link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<style type="text/css" media="screen">
+		
+body {
+    margin: 0;
+    padding: 0;
+    font: 14px/20px 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-family: 'Open Sans';    
+    overflow: hidden;
+}
+
+#header {
+    font-size: 40px;
+    width: 100%;
+    background-color: #3b6858;
+    color: #fff;
+    text-align: left;
+    line-height: 52px;
+    padding-left: 20px;
+    font-weight: 300;
+}
+
+#header a {
+    text-decoration: none;
+}
+
+#map {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+ 
+#legend {
+	font-family: 'Open Sans', serif;
+	width: 220px;
+	padding: 5px 5px;
+	color: #000;
+	text-align: center;
+	 display: inline-block;
+}
+.legend-box {
+	float: left;
+	margin-left: 5px;
+	line-height: 11px;
+	height: 20px;
+	width: 35px;
+	font-size: 8px;
+	color: #999;
+	border: 1px solid #fff;
+}
+
+#datos_mun {
+    background-color: #fff;
+	font-family: 'Open Sans', serif;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 225px;
+}
+
+.mundata-box {
+    border-bottom: 1px solid #eee;
+    position: relative;
+    height: 120px;
+}
+
+#datos_mun .nom_mun {
+    background-color: #cc3333;
+    font-size: 14px;
+    padding: 5px 10px;
+    font-weight: 400;
+    color: #fff;
+}
+
+#datos_mun .box-title {
+    padding: 5px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.span-rate, .span-count {
+    color: #cc3333;
+    padding: 2px 10px;
+    font-weight: 400;
+    font-size: 16px;
+}
+#filters {
+    z-index: 100;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+.filter-button {
+	padding: 2px 5px;
+	background-color: #cc3333;
+	margin: 3px;
+    font-size: 14px;
+    line-height: 24px;
+    color: #fff;
+    float: left;
+}
+.filter-button:hover, .filter-selected {
+	color: #222;
+	background-color: #f8e4e4;
+}
+.state_box {
+	background-color: #da6969;
+	height:69px !important;
+	color: #fff;
+}
+.state_name {
+	position: absolute;
+	left: 90px;
+	top: 15px;
+	font-size: 11px;
+	text-transform: uppercase;
+	font-weight: 700;
+	width: 200px;
+}
+.state_image {
+	padding-top: 3px;
+	margin-left: 15px;
+}
+.num_mun {
+	position: absolute;
+	left: 90px;
+	top: 30px;
+	font-size: 11px;
+}
+.span-poder {
+    position: absolute;
+}
+.state_image {
+	padding-top: 3px;
+	margin-left: 15px;
+}
+
+#types {
+	width: 260px;
+    background-color: #fff;
+    z-index: 1999;
+    position: absolute;
+    left: 10px;
+    top: 80px;
+	font-family: 'Open Sans', serif;
+}
+
+.varname {
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #222;
+}
+.varlist-header {
+	background-color: #f8e4e4;
+	padding: 5px 10px;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: 400;
+    color: #222;
+}
+.titulo {
+    background-color: #cc3333;
+	padding: 5px 10px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 400;
+    color: #fff;
+}
+.nombre-variable-selected {
+	color: #3b6858;
+}
+
+.agency {
+    padding: 1px 10px;
+}
+
+.chosen-container {
+	margin-bottom: 5px;
+}
+
+#types .chosen-single {
+	border: none;
+	background: #cc3333;
+	color: #fff;
+	box-shadow: none;
+	text-shadow: none;
+	border-radius: 0px !important;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 300;
+}
+#types .chosen-container .chosen-results li.highlighted {
+	background: #cc3333;
+}
+
+#loading {
+	  font-family: 'Open Sans', serif;
+  	  font-size: 18px;
+      font-weight: 400;
+      padding: 25px;
+	  position: absolute;
+	  left: 0;
+	  top: 45%;
+	  right: 0;
+	  margin: 0 auto;
+	  z-index: 1000;
+	  background-color: #222;
+	  color: #fff;
+	  text-align: center;
+	  width: 200px;
+	  border-radius: 20px;
+	  display: none;
+  }
+
+		</style>
+		<script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+		<script src="js/jquery.ui.labeledslider.js"></script>
+	</head>
+	<body>
+		<div id="loading">Cargando datos...</div>
+
+
+		<div id="map"></div>
+		<div id="datos"></div>
+		
+		<div id="types">
+			<div class="titulo">Título</span></div>			
+			<div class="varlist-header">Filtros</div>
+			<div class="varname types">Año
+				<select id="year" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='2014'>2014</option>
+					<option value='2013'>2013</option>
+					<option value='2012'>2012</option>
+					<option value='2011'>2011</option>
+	<option value='2010'>2010</option>
+					<option value='2009'>2009</option>
+					<option value='2008'>2008</option>
+					<option value='2007'>2007</option>
+	<option value='2006'>2006</option>
+					<option value='2005'>2005</option>
+					<option value='2004'>2004</option>
+					<option value='2003'>2003</option>
+	<option value='2002'>2002</option>
+					<option value='2001'>2001</option>
+					<option value='2000'>2000</option>
+					<option value='1999'>1999</option>
+					<option value='1998'>1998</option>
+					<option value='1997'>1997</option>								
+				</select>
+			</div>
+			<div class="varname types">Mes
+				<select id="month" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='t'>-- Todos --</option>
+					<option value='1'>enero</option>
+					<option value='2'>febrero</option>
+					<option value='3'>marzo</option>
+					<option value='4'>abril</option>
+					<option value='5'>mayo</option>
+					<option value='6'>junio</option>
+					<option value='7'>julio</option>
+					<option value='8'>agosto</option>
+					<option value='9'>septiembre</option>
+					<option value='10'>octubre</option>
+					<option value='11'>noviembre</option>
+					<option value='12'>diciembre</option>
+				</select>
+			</div>
+			<div class="varname types">Nivel geográfico
+				<select id="year" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='2014'>Municipal</option>
+					<option value='2013'>Estatal</option>
+					<option value='2012'>Nacional<option>
+
+				</select>
+			</div>
+			<div class="varname types">Selecciona un indicador
+				<select id="year" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='t'>-- Todos los delitos--</option>
+					<option value='t'>Delitos del fuero federal</option>
+					<option value='t'>Delitos del fuero común</option>
+					<option value='t'>Registro Nacional de Personas Desaparecidas</option>
+					<option value='t'>Quejas ante la Comisión Nacional de Derechos Humanos</option>
+				</select>
+			</div>
+			<div class="varname types">Selecciona un tipo de delito 
+				<select id="year" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='t'>-- Todos los delitos--</option>
+					<option value='t'>Robo</option>
+					<option value='t'>Homicidio</option>
+					<option value='t'>Delitos Patrimoniales</option>
+					<option value='t'>Secuestro </option>
+ 					<option value='t'>Delitos Sexuales  </option>
+					<option value='t'>Otros delitos  </option>
+
+
+				</select>
+			</div>
+		
+			<div class="varname types">Selecciona la fuente
+				<select id="month2" data-placeholder="Elija una variable..." class="chosen-select">
+					<option value='1'>SNSP</option>
+					<option value='2'>ENVIPE</option>
+					</select>
+			</div>
+			
+			
+
+
+			
+		</div>
+		<div id="filters">
+			<div>Variable representada en el mapa:</div>
+			<div>
+				<div class="var-filter-button filter-button filter-selected" id="varselect-count" onmousedown="change_var_map('count')" id="filter-count">Número</div>
+				<div class="var-filter-button filter-button" id="varselect-rate" onmousedown="change_var_map('rate')" id="filter-rate">Tasa por 100 mil habitantes</div>
+			</div>
+		</div>
+		<div id="datos_mun">
+			<div class="nom_mun">Pase el cursor sobre un municipio...</div>
+			<div class="mundata-box state_box">
+				<div class="state_image"></div>
+				<div class="state_name"></div>
+				<div class="num_mun"></div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title">Número de delitos:</div>
+				<div id="var-count" class="span-count">--</div>
+			</div>
+			<div class="mundata-box">
+				<div class="box-title">Delitos por cada 100 mil habitantes:</div>
+				<div id="var-rate" class="span-rate">--</div>
+			</div>
+			<div id="legend" style="display: block;">
+				<br/>
+				<div style="background-color: #fff; border: 1px solid #f2f2f2;" class="legend-box"></div>
+				<div style="background-color: #fee5d9; border: 1px solid #fcae91;" class="legend-box"></div>
+				<div style="background-color: #fcae91; border: 1px solid #fb6a4a;" class="legend-box"></div>
+				<div style="background-color: #fb6a4a; border: 1px solid #de2d26;" class="legend-box"></div>
+				<div style="background-color: #de2d26; border: 1px solid #a50f15;" class="legend-box"></div>
+				<div id="legend-1" class="legend-box">--</div>
+				<div id="legend-2" class="legend-box">--</div>
+				<div id="legend-3" class="legend-box">--</div>
+				<div id="legend-4" class="legend-box">--</div>
+				<div id="legend-5" class="legend-box">--</div>
+				<div style="clear:both;"></div>
+			</div>
+			<div class="mundata-box2">
+				<div class="box-title"><b>Fuente:</b> <a href="http://google.com"> Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública</a></div>
+				</div>
+		</div>
+		
+		<script type="text/javascript" charset="utf-8">
+		
+			$(".chosen-select").chosen({width: "240px"});
+		
+			function commaSeparateNumber(val){
+			    while (/(\d+)(\d{3})/.test(val.toString())){
+			      val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+			    }
+			    return val;
+			  }
+			  
+			var replacements = [
+				[
+					["Todos",'t'],
+					["DELITOS PATRIMONIALES","a1"],
+					["DELITOS SEXUALES","a2"],
+					["HOMICIDIOS","a3"],
+					["LESIONES","a4"],
+					["OTROS DELITOS","a5"],
+					["PRIV. DE LA LIBERTAD (SECUESTRO)","a6"],
+					["ROBOS","a7"],
+				],
+				[
+					["Todos",'t'],
+					["DELITOS PATRIMONIALES","b1"],
+					["DELITOS SEXUALES (VIOLACION)","b2"],
+					["HOMICIDIOS","b3"],
+					["LESIONES","b4"],
+					["OTROS DELITOS","b5"],
+					["PRIV. DE LA LIBERTAD (SECUESTRO)","b6"],
+					["ROBO COMUN","b7"],
+					["ROBO DE GANADO (ABIGEATO)","b8"],
+					["ROBO EN CARRETERAS","b9"],
+					["ROBO EN INSTITUCIONES BANCARIAS","b10"],
+				],
+				[
+					["Todos",'t'],
+					["ABUSO DE CONFIANZA","c1"],
+					["DAÑO EN PROPIEDAD AJENA","c2"],
+					["DESPOJO","c3"],
+					["EXTORSION","c4"],
+					["FRAUDE","c5"],
+					["VIOLACION","c6"],
+					["CULPOSOS","c7"],
+					["DOLOSOS","c8"],
+					["CULPOSAS","c9"],
+					["DOLOSAS","c10"],
+					["AMENAZAS","c11"],
+					["ESTUPRO","c12"],
+					["OTROS SEXUALES","c13"],
+					["RESTO DE LOS DELITOS (OTROS)","c14"],
+					["SECUESTRO","c15"],
+					["CON VIOLENCIA","c16"],
+					["SIN VIOLENCIA","c17"],
+					["ABIGEATO","c18"],
+				],
+				[
+					["Todos",'t'],
+					["ABUSO DE CONFIANZA","d1"],
+					["DAÑO EN PROPIEDAD AJENA","d2"],
+					["CON VIOLENCIA","d3"],
+					["SIN DATOS","d4"],
+					["SIN VIOLENCIA","d5"],
+					["EXTORSION","d6"],
+					["FRAUDE","d7"],
+					["VIOLACION","d8"],
+					["CON ARMA BLANCA","d9"],
+					["CON ARMA DE FUEGO","d10"],
+					["OTROS","d11"],
+					["AMENAZAS","d12"],
+					["ESTUPRO","d13"],
+					["OTROS SEXUALES","d14"],
+					["RESTO DE LOS DELITOS (OTROS)","d15"],
+					["SECUESTRO","d16"],
+					["A CASA HABITACION","d17"],
+					["A NEGOCIO","d18"],
+					["A TRANSEUNTES","d19"],
+					["A TRANSPORTISTAS","d20"],
+					["DE VEHICULOS","d21"],
+					["ABIGEATO","d22"],
+					["A AUTOBUSES","d23"],
+					["A CAMIONES DE CARGA","d24"],
+					["A VEHICULOS PARTICULARES","d25"],
+					["A BANCOS","d26"],
+					["A CASA DE BOLSA","d27"],
+					["A CASA DE CAMBIO","d28"],
+					["A EMPRESA DE TRASLADO DE VALORES","d29"]
+				]
+			];
+			   
+			var c_data = null;
+			var map_data;
+			var c_var = 'rate';
+			var breaks;
+			
+			var nacional = {};
+			
+			var fillColors = ["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f"];
+			
+			var entidades_list = ["", "Aguascalientes", "Baja California", "Baja California Sur", "Campeche", "Coahuila", "Colima", "Chiapas", "Chihuahua", "Distrito Federal", "Durango", "Guanajuato", "Guerrero", "Hidalgo", "Jalisco", "México", "Michoacán", "Morelos", "Nayarit", "Nuevo León", "Oaxaca", "Puebla", "Querétaro", "Quintana Roo", "San Luis Potosí", "Sinaloa", "Sonora", "Tabasco", "Tamaulipas", "Tlaxcala", "Veracruz", "Yucatán", "Zacatecas"];
+			var entidades_count_mun = [0,11,5,5,11,38,10,118,67,16,39,46,81,84,125,125,113,33,20,51,570,217,18,9,58,18,72,17,43,60,212,106,58];
+			
+			function lookup_label(l, n) {
+				for (i = 0; i < replacements[n].length; i++) {
+					if (replacements[n][i][1] == l) return replacements[n][i][0];
+				}
+			}
+
+			function populate_variables() {
+				$.getJSON( "php/variables.php", { year: $("#year option:selected").val(), month: $("#month option:selected").val(), modalidad: $("#modalidad option:selected").val(), submodalidad: $("#submodalidad option:selected").val(), tipo: $("#tipo option:selected").val(), subtipo: $("#subtipo option:selected").val() } )
+					.done(function( json ) {
+						vars = ["modalidad", "submodalidad", "tipo", "subtipo"]
+						for (j = 2; j < 6; j++) {
+							if ($("#"+vars[j-2]+" option:selected").val() == 't') {
+								$("#"+vars[j-2]).html("<option value='t'>Todos los delitos</option>");
+								for (i = 0; i < json[j].length; i++) {
+									$("#"+vars[j-2]).append("<option value='"+json[j][i]+"'>"+lookup_label(json[j][i], j-2)+"</option>");
+								}
+							}
+						}
+						$(".chosen-select").trigger("chosen:updated");
+					});
+			}
+			
+			function fill(n) {
+				if (n >= breaks[3]) return "#de2d26";
+				else if (n >= breaks[2]) return "#fb6a4a";
+				else if (n >= breaks[1]) return "#fcae91";
+				else if (n == 0) return "#fff";
+				else return "#fee5d9";
+			}
+			function stroke(n) {
+				if (n >= breaks[3]) return "#a50f15";
+				else if (n >= breaks[2]) return "#de2d26";
+				else if (n >= breaks[1]) return "#fb6a4a";
+				else if (n == 0) return "#fff";
+				else return "#fcae91";
+				
+			}
+			
+			function change_var_map(v) {
+				$(".var-filter-button").removeClass("filter-selected");
+				$("#varselect-"+v).addClass("filter-selected");
+				c_var = v;
+				change_var();
+			}
+			
+			function change_var() {
+				$("#loading").show();
+				
+				$.getJSON( "php/attributes.php", { year: $("#year option:selected").val(), month: $("#month option:selected").val(), modalidad: $("#modalidad option:selected").val(), submodalidad: $("#submodalidad option:selected").val(), tipo: $("#tipo option:selected").val(), subtipo: $("#subtipo option:selected").val() } )
+					.done(function( json ) {
+						var values = [];
+						$.each( municipios.features, function( mid, municipio ) {
+							if (typeof json[municipio.properties.CVE_INEGI] != 'undefined') {
+								municipio.properties.count = parseInt(json[municipio.properties.CVE_INEGI].count);
+								municipio.properties.rate = parseInt(json[municipio.properties.CVE_INEGI].rate);
+								if (!isNaN(parseInt(json[municipio.properties.CVE_INEGI][c_var]))) 
+									values.push(parseInt(json[municipio.properties.CVE_INEGI][c_var]));	
+							}
+							else {
+								municipio.properties.count = -1;
+								municipio.properties.rate = -1;
+							}
+						});
+						var gs = new geostats(values);
+						breaks = gs.getClassJenks(4);
+						gs.setColors(fillColors);
+						gs.setPrecision(0);
+						$("#legend-1").html("N/A");
+						$("#legend-2").html("&lt; " + commaSeparateNumber(breaks[1]));
+						$("#legend-3").html(commaSeparateNumber(breaks[1]) + " - " + commaSeparateNumber(breaks[2]));
+						$("#legend-4").html(commaSeparateNumber(breaks[2]) + " - " + commaSeparateNumber(breaks[3]));
+						$("#legend-5").html(commaSeparateNumber(breaks[3]) + " - " + commaSeparateNumber(breaks[4]));
+						
+						if (map_data != null) map.removeLayer(map_data);
+						map_data = L.geoJson(municipios, {
+							style: function(feature) {
+								return {
+							        weight: 0.25,
+							        opacity: 0.5,
+							        color: stroke(feature.properties[c_var]),
+							        fillOpacity: 0.5,
+							        fillColor: fill(feature.properties[c_var])
+						        }
+							},
+							onEachFeature: onEachFeature
+						})
+						
+						map.addLayer(map_data);					
+						$("#loading").hide();
+				});
+				
+				
+		    }
+			
+			var map = new L.Map('map', {
+				maxZoom: 14,
+				minZoom: 5
+			}).setView(new L.LatLng(21.25,-101.5),5);
+			map.scrollWheelZoom.disable();
+			
+			var baseLayer = new L.TileLayer("http://{s}.google.com/vt/?hl=en&x={x}&y={y}&z={z}&s={s}&apistyle=p.s%3A-100%2Cs.t%3A1314%7Cp.v%3Aoff%2Cs.t%3A6%7Cp.l%3A31%2Cs.t%3A3%7Cp.v%3Aoff%2Cs.t%3A18%7Cp.v%3Aoff%2Cs.t%3A2%7Cp.v%3Aoff%2Cs.t%3A5%7Cp.l%3A47%2Cs.t%3A20%7Cp.v%3Aoff%2Cs.t%3A4%7Cp.v%3Aoff%2Cs.t%3A5%7Cs.e%3Al%7Cp.v%3Aoff&style=47,37%7Csmartmaps", {
+				subdomains: ['mt0','mt1','mt2','mt3'],
+				detectRetina: 'true',
+				attribution: "Basemap © 2014 Google",
+				zIndex: -1
+			});
+			map.addLayer(baseLayer);
+			
+			var entidades = new L.TileLayer.WMS("/geoserver/geom/wms", {
+				layers: 'geom:entidades',
+				transparent: 'true',
+				format: 'image/png',
+				opacity: '0.5',
+				tiled: 'true',
+				detectRetina: 'true',
+				zIndex: 200
+			});
+	        map.addLayer(entidades);
+	        
+	        function onEachFeature(feature, layer) {
+				layer.on({
+					mouseover: function () {
+						c_data = feature.properties;
+						$(".nom_mun").html(c_data.NOM_MUN + ", " + c_data.NOM_ENT);
+						$(".state_name").html(entidades_list[parseInt(c_data.CVE_ENT)]);
+						$(".num_mun").html(entidades_count_mun[parseInt(c_data.CVE_ENT)] + " municipios");
+						$(".state_image").html("<img src='img/estados/"+parseInt(c_data.CVE_ENT)+".png' />");
+						if (c_data["count"] != -1) $(".span-count").html("Municipio: " + commaSeparateNumber(c_data["count"]) + "<br/>Estado: " + commaSeparateNumber(c_data["count"]) + "<br/>Nacional: " + commaSeparateNumber(c_data["count"]));
+						else $(".span-count").html("N/A");
+						if (c_data["rate"] != -1) $(".span-rate").html("Municipio: " + commaSeparateNumber(c_data["rate"]) + "<br/>Estado: " + commaSeparateNumber(c_data["rate"]) + "<br/>Nacional: " + commaSeparateNumber(c_data["rate"]));
+						else $(".span-rate").html("N/A");
+					}
+				});
+			}
+			
+			$( "select.chosen-select" ).change(function () { populate_variables(); change_var(); });
+			populate_variables();
+			change_var();
+			
+			
+
+		    
+		</script>
+
+	</body>
+
+</html>
