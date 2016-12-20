@@ -1,4 +1,4 @@
-#Version of ubuntu server 
+#Version of ubuntu server
 FROM ubuntu:14.04
 
 #
@@ -13,7 +13,8 @@ RUN apt-get install -y --no-install-recommends\
   sudo \
   software-properties-common\
   libgdal1-dev\
-  libproj-dev
+  libproj-dev\
+  php5-pgsql
 
 
 RUN mkdir servidor
