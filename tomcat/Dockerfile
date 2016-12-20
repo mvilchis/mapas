@@ -4,7 +4,7 @@ FROM ubuntu:14.04
 #
 RUN apt-get -y update
 #-------------Instalacion de prerequisitos  ------------------------
-RUN apt-get install -y --no-install-recommends\
+RUN apt-get install -y \
    unzip\
    vim\
    python-software-properties\
@@ -12,9 +12,7 @@ RUN apt-get install -y --no-install-recommends\
    pwgen\
    sudo \
    ca-certificates \
-   software-properties-common\
-   libgdal1-dev\
-   libproj-dev
+   software-properties-common
                                    
 RUN mkdir tomcat_servidor
 WORKDIR tomcat_servidor

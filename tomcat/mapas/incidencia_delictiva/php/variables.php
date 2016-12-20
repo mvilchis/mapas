@@ -13,7 +13,7 @@ if ($submodalidad == "t") $submodalidad = "%";
 if ($tipo == "t") $tipo = "%";
 if ($subtipo == "t") $subtipo = "%";
 
-$conn = pg_connect('host=localhost dbname=incidencia_delictiva user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=incidencia_delictiva user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 
 $query = "SELECT \"column\" FROM variables WHERE \"column\" LIKE '".$year."_".$month."_".$modalidad."_".$submodalidad."_".$tipo."_".$subtipo."'";
 

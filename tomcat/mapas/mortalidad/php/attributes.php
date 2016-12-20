@@ -46,7 +46,7 @@ if ($year != "") {
 }
 if ($where == "WHERE ") $where = '';
 
-$conn = pg_connect('host=localhost dbname=mortalidad_materna user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=mortalidad_materna user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 $result = pg_query($conn, 'SELECT clave_'.$tipo.' AS clave, COUNT(*) FROM mortalidadmaterna4 '.$where.' GROUP BY clave_'.$tipo);
 
 $results = pg_fetch_all($result);

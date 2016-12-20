@@ -78,7 +78,7 @@ $color["bugn"] = array(
     9 => array("#f7fcfd", "#e5f5f9", "#ccece6", "#99d8c9", "#66c2a4", "#41ae76", "#238b45", "#006d2c", "#00441b"),
 );
 
-$conn = pg_connect('host=localhost dbname=sinhambreclone user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=sinhambreclone user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 $result = pg_query($conn, 'select carto_quantilebins2(array_agg('.$table.'."'.$var.'"::numeric), '.$num_classes.') from '.$table.' ');
 $search = array( "{", "}" );
 $replace = str_replace($search, "", pg_fetch_array($result));
@@ -86,11 +86,11 @@ $classes = explode(",", $replace[0]);
 
 header ("Content-Type:text/xml");
 ?>
-<StyledLayerDescriptor version="1.0.1" 
-    xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd" 
-    xmlns="http://www.opengis.net/sld" 
-    xmlns:ogc="http://www.opengis.net/ogc" 
-    xmlns:xlink="http://www.w3.org/1999/xlink" 
+<StyledLayerDescriptor version="1.0.1"
+    xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+    xmlns="http://www.opengis.net/sld"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <NamedLayer>
   	<Name>sinhambre:sinhambre</Name>

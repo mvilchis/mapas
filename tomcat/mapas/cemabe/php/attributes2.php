@@ -7,7 +7,7 @@ $tamano = pg_escape_string($_GET["tamano"]);
 $year = pg_escape_string($_GET["year"]);
 $pregunta = pg_escape_string($_GET["pregunta"]);
 
-$conn = pg_connect('host=localhost dbname=imss user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=imss user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 
 $result = pg_query($conn, 'SELECT clave, '.$pregunta.'_obs AS obs, '.$pregunta.'_por AS sal, p0_1_obs AS total FROM alumnos LIMIT 5000');
 

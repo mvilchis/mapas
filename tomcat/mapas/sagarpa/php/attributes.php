@@ -3,7 +3,7 @@
 $producto = pg_escape_string($_GET["producto"]);
 $year = pg_escape_string($_GET["year"]);
 
-$conn = pg_connect('host=localhost dbname=sagarpa user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=sagarpa user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 
 $result = pg_query($conn, "SELECT * FROM s201412 WHERE producto = '".$producto."' AND year = '".$year."'");
 $results = pg_fetch_all($result);

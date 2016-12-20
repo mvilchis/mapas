@@ -11,7 +11,7 @@ if ($month == "t") $ratepgr_add = "a";
 else if ($month >= 10 || $month <= 4) $ratepgr_add = "a";
 else $ratepgr_add = "a";
 
-$conn = pg_connect('host=localhost dbname=pgr user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
+$conn = pg_connect('host='.getenv('POSTGRES_PORT_5432_TCP_ADDR').' dbname=pgr user=postgres password=postgres') or die(form_set_error('db', t('La base de datos no pudo ser contactado.')));
 
 $query = 'SELECT "countpgr_'.$year.'".cve AS clave, "countpgr_'.$year.'"."'.$month.'_'.$modalidad.'_'.$submodalidad.'_'.$tipo.'_'.$subtipo.'" AS count, "ratepgr_'.$year.$ratepgr_add.'"."'.$month.'_'.$modalidad.'_'.$submodalidad.'_'.$tipo.'_'.$subtipo.'" AS rate FROM "countpgr_'.$year.'" INNER JOIN "ratepgr_'.$year.$ratepgr_add.'" ON "countpgr_'.$year.'".cve = "ratepgr_'.$year.$ratepgr_add.'".cve';
 
